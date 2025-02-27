@@ -6,8 +6,8 @@ import AdminEducationView from "@/components/admin-view/education";
 import AdminExperienceView from "@/components/admin-view/experience";
 import AdminHomeView from "@/components/admin-view/home";
 import AdminProjectView from "@/components/admin-view/project";
-import { addData } from "@/services";
-import { useState } from "react";
+import { addData, getData } from "@/services";
+import { useEffect, useState } from "react";
 
 const initialHomeFormData = {
   heading: "",
@@ -53,6 +53,9 @@ export default function AdminView() {
   const [projectViewFormData, setProjectViewFormData] = useState(
     initialProjectFormData
   );
+
+  const [allData, setAllData] = useState({});
+
   const menuItem = [
     {
       id: "home",
@@ -130,8 +133,54 @@ export default function AdminView() {
     };
 
     const response = await addData(currentTab, dataMap[currentTab]);
-    console.log(response);
+    if (response.success) {
+      resetFormDatas();
+      extractAllDatas();
+    }
   }
+
+  useEffect(() => {
+    extractAllDatas();
+  }, [currentSelectedTab]);
+
+  async function extractAllDatas() {
+    const response = await getData(currentSelectedTab);
+
+    if (
+      currentSelectedTab === "home" &&
+      response &&
+      response.data &&
+      response.data.length
+    ) {
+      setHomeViewFormData(response && response.data[0]);
+    }
+
+    if (
+      currentSelectedTab === "about" &&
+      response &&
+      response.data &&
+      response.data.length
+    ) {
+      setAboutViewFormData(response && response.data[0]);
+    }
+    if (response?.success) {
+      setAllData({
+        ...allData,
+        [currentSelectedTab]: response && response.data,
+      });
+    }
+  }
+
+  console.log(allData, homeViewFormData, "homeViewFormData");
+
+  function resetFormDatas() {
+    setHomeViewFormData(initialHomeFormData);
+    setAboutViewFormData(initialAboutFormData);
+    setExperienceViewFormData(initialExperienceFormData);
+    setEducationViewFormData(initialEducationFormData);
+    setProjectViewFormData(initialProjectFormData);
+  }
+
   return (
     <div className="border-b border-gray-400 ">
       <nav className="-mb-0.5 flex justify-center space-x-6" role="tablist">
@@ -140,6 +189,7 @@ export default function AdminView() {
             <button
               onClick={() => {
                 setCurrentSelectedTab(item.id);
+                resetFormDatas();
               }}
               key={item.id}
               type="button"
