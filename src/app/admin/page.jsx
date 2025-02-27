@@ -6,7 +6,7 @@ import AdminEducationView from "@/components/admin-view/education";
 import AdminExperienceView from "@/components/admin-view/experience";
 import AdminHomeView from "@/components/admin-view/home";
 import AdminProjectView from "@/components/admin-view/project";
-import { addData, getData } from "@/services";
+import { addData, getData, updateData } from "@/services";
 import { useEffect, useState } from "react";
 
 const initialHomeFormData = {
@@ -55,6 +55,7 @@ export default function AdminView() {
   );
 
   const [allData, setAllData] = useState({});
+  const [update, setUpdate] = useState(false);
 
   const menuItem = [
     {
@@ -132,7 +133,9 @@ export default function AdminView() {
       project: projectViewFormData,
     };
 
-    const response = await addData(currentTab, dataMap[currentTab]);
+    const response = update
+      ? await updateData(currentSelectedTab, dataMap[currentSelectedTab])
+      : await addData(currentSelectedTab, dataMap[currentSelectedTab]);
     if (response.success) {
       resetFormDatas();
       extractAllDatas();
@@ -153,6 +156,7 @@ export default function AdminView() {
       response.data.length
     ) {
       setHomeViewFormData(response && response.data[0]);
+      setUpdate(true);
     }
 
     if (
@@ -162,6 +166,7 @@ export default function AdminView() {
       response.data.length
     ) {
       setAboutViewFormData(response && response.data[0]);
+      setUpdate(true);
     }
     if (response?.success) {
       setAllData({
@@ -190,6 +195,7 @@ export default function AdminView() {
               onClick={() => {
                 setCurrentSelectedTab(item.id);
                 resetFormDatas();
+                setUpdate(false);
               }}
               key={item.id}
               type="button"

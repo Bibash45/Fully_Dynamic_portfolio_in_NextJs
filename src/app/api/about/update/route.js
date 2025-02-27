@@ -1,6 +1,6 @@
-import Home from "@/models/Home";
 import connectToDB from "@/database";
 import { NextResponse } from "next/server";
+import About from "@/models/About";
 
 export const dynamic = "force-dynamic";
 
@@ -9,16 +9,25 @@ export async function PUT(req) {
     await connectToDB();
     const extractData = await req.json();
 
-    const { heading, summary } = extractData;
+    const {
+      _id,
+      aboutme,
+      noofprojects,
+      yearofexperience,
+      noofclients,
+      skills,
+    } = extractData;
 
-    const homeData = await Home.find({});
-    const updateData = await Home.findByIdAndUpdate(
+    const updateData = await About.findByIdAndUpdate(
       {
-        _id: homeData[0]._id,
+        _id: _id,
       },
       {
-        heading,
-        summary,
+        aboutme,
+        noofprojects,
+        yearofexperience,
+        noofclients,
+        skills,
       },
       {
         new: true,

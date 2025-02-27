@@ -47,7 +47,7 @@ export default function AdminAboutView({ formData, setFormData,handleSaveData })
           setFormData={setFormData}
         />
         <button onClick={()=>handleSaveData('about')} className="mt-[5px] border border-blue-600 bg-blue-600 text-white p-3 font-bold text-[16px] focus:bg-green-800 rounded-md ">
-          Add About Me
+          Save Changes
         </button>
       </div>
     </div>
