@@ -2,7 +2,7 @@
 
 import FormControls from "../form-controls";
 
-export default function AdminExperienceView({ formData, setFormData,handleSaveData }) {
+export default function AdminExperienceView({ formData, setFormData,handleSaveData,data }) {
     // console.log(formData);
     
   const controls = [
@@ -40,6 +40,20 @@ export default function AdminExperienceView({ formData, setFormData,handleSaveDa
   return (
     <div className="w-full ">
       <div className="bg-[#d7d7d7] shadow-md rounded px-8 pt-6 pb-8 mb-4">
+
+        <div className="mb-10 space-y-6">
+{data && data.length ? (
+  data.map((item,index)=>{
+    return (<div key={index} className="flex bg-[#ffffff] flex-col  gap-2 p-6 rounded-lg shadow-md border border-green-600 hover:border-green-800 transition duration-300">
+<p className="text-lg font-semibold text-gray-700">Position : {item.position}</p>
+<p className="text-lg  text-gray-700">Company : {item.company}</p>
+<p className="text-lg  text-gray-700">Duration : {item.duration}</p>
+<p className="text-lg  text-gray-700">Location: {item.location}</p>
+<p className="text-lg  text-gray-700">{item.jobprofile}</p>
+    </div>)
+ })
+) : (<p className="text-center text-gray-600 ">No Job Experience data available</p>)}
+        </div>
         <FormControls
           controls={controls}
           formData={formData}

@@ -6,7 +6,8 @@ import AdminEducationView from "@/components/admin-view/education";
 import AdminExperienceView from "@/components/admin-view/experience";
 import AdminHomeView from "@/components/admin-view/home";
 import AdminProjectView from "@/components/admin-view/project";
-import { addData, getData, updateData } from "@/services";
+import Login from "@/components/admin-view/login";
+import { addData, getData, login, updateData } from "@/services";
 import { useEffect, useState } from "react";
 
 const initialHomeFormData = {
@@ -20,6 +21,7 @@ const initialAboutFormData = {
   noofclients: "",
   skills: "",
 };
+
 const initialExperienceFormData = {
   position: "",
   company: "",
@@ -27,6 +29,7 @@ const initialExperienceFormData = {
   location: "",
   jobprofile: "",
 };
+
 const initialEducationFormData = {
   degree: "",
   year: "",
@@ -37,6 +40,10 @@ const initialProjectFormData = {
   website: "",
   technologies: "",
   github: "",
+};
+const initialLoginFormData = {
+  username: "",
+  password: "",
 };
 
 export default function AdminView() {
@@ -56,6 +63,10 @@ export default function AdminView() {
 
   const [allData, setAllData] = useState({});
   const [update, setUpdate] = useState(false);
+  const [authUser, setAuthUser] = useState(() => {
+    return JSON.parse(sessionStorage.getItem("authUser")) || false;
+  });
+  const [loginFormData, setLoginFormData] = useState(initialLoginFormData);
 
   const menuItem = [
     {
@@ -88,6 +99,7 @@ export default function AdminView() {
           formData={experienceViewFormData}
           setFormData={setExperienceViewFormData}
           handleSaveData={handleSaveData}
+          data={allData?.experience}
         />
       ),
     },
@@ -99,6 +111,7 @@ export default function AdminView() {
           formData={educationViewFormData}
           setFormData={setEducationViewFormData}
           handleSaveData={handleSaveData}
+          data={allData?.education}
         />
       ),
     },
@@ -110,6 +123,7 @@ export default function AdminView() {
           formData={projectViewFormData}
           setFormData={setProjectViewFormData}
           handleSaveData={handleSaveData}
+          data={allData?.project}
         />
       ),
     },
@@ -186,6 +200,36 @@ export default function AdminView() {
     setProjectViewFormData(initialProjectFormData);
   }
 
+  async function handleLogin() {
+    const res = await login(loginFormData);
+    console.log(res, "login");
+    if (res.success) {
+      sessionStorage.setItem("authUser", JSON.stringify(true));
+      setAuthUser(true);
+      setLoginFormData(initialLoginFormData);
+    }
+  }
+
+  useEffect(() => {
+    const storedUser = sessionStorage.getItem("authUser");
+    if (storedUser) {
+      setAuthUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  console.log(authUser);
+
+  if (!authUser) {
+    return (
+      <Login
+        handleLogin={handleLogin}
+        formData={loginFormData}
+        setFormData={setLoginFormData}
+        handleSaveData={handleSaveData}
+      />
+    );
+  }
+
   return (
     <div className="border-b border-gray-400 ">
       <nav className="-mb-0.5 flex justify-center space-x-6" role="tablist">
@@ -205,6 +249,16 @@ export default function AdminView() {
             </button>
           );
         })}
+
+        <button
+        className="p-3 font-bold text-xl text-white bg-red-700 mt-1 rounded-md hover:bg-red-500"
+          onClick={() => {
+            sessionStorage.removeItem("authUser");
+            setAuthUser(false);
+          }}
+        >
+          Logout
+        </button>
       </nav>
       <div className="mt-10 p-10">{currentComponent}</div>
     </div>
