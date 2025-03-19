@@ -1,13 +1,13 @@
 "use client"
-import { useParams } from "next/navigation"
+import {  usePathname } from "next/navigation"
 import Navbar from "../navbar"
 
 export default function CommonLayout({children}){
-    const pathname = useParams()
+    const pathname = usePathname()
 
     return (
         <>
-        {pathname !== '/Admin' ? <Navbar /> : null}
+        {pathname !== '/admin' ? <Navbar /> : null}
         {children}
         </>
     )
